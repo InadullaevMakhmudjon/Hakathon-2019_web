@@ -1,6 +1,6 @@
 <template >
   <v-card class="justify-center mx-2" max-width="100%" max-height="350"  flat elevation="10">
-    <v-card-title class="mb-0">Line Graph Analysis</v-card-title>
+  c
        <v-card-text>
             <canvas height="250" ref="canvas"></canvas>
        </v-card-text>

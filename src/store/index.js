@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
-
+import { baseURL } from '../utils/url'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -27,7 +27,7 @@ export default new Vuex.Store({
   actions: {
     recieveToken (context, payload) {
       return new Promise((resolve, reject) => {
-        axios.post('http://makhmudjon.me/api/auth/login', {
+        axios.post(`${baseURL}/auth/login`, {
           username: payload.username,
           password: payload.password
 
@@ -59,7 +59,7 @@ export default new Vuex.Store({
     recieveCategories (context, payload) {
       const AuthStr = `Bearer ${context.state.token}`
       return new Promise((resolve, reject) => {
-        axios.get('http://makhmudjon.me/api/categories', { headers: { Authorization: AuthStr } }).then(res => {
+        axios.get(`${baseURL}/categories`, { headers: { Authorization: AuthStr } }).then(res => {
           context.commit('setrecieveCategories', res)
           resolve(context)
         }).catch(error => {
@@ -71,7 +71,7 @@ export default new Vuex.Store({
     getUserInfo (context, payload) {
       const AuthStr = `Bearer ${context.state.token}`
       return new Promise((resolve, reject) => {
-        axios.get('http://makhmudjon.me/api/auth', { headers: { Authorization: AuthStr } }).then(res => {
+        axios.get(`${baseURL}/auth`, { headers: { Authorization: AuthStr } }).then(res => {
           context.commit('setGetUserInfo', res.data)
           resolve(context)
         }).catch(error => {
@@ -96,7 +96,7 @@ export default new Vuex.Store({
     },
     getUserInfo (state) {
       return state.userInfo
-    },
+    }
     // getSubCategories ({ allCategories }) {
     //   return categoryId => allCategories
     //     .filter(({ id }) => id === categoryId)

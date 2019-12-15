@@ -7,7 +7,7 @@
 <script>
 import {Bar, Pie } from 'vue-chartjs'
 import axios from 'axios'
-
+import { baseURL } from '../../utils/url'
 export default {
   extends:  Pie,
   props: ['categoryId'],
@@ -58,14 +58,14 @@ export default {
   },
   methods: {
     executer(query) {
-      console.log(`http://makhmudjon.me/api/complains?${query.join('&')}`)
-      return axios.get(`http://makhmudjon.me/api/complains?${query.join('&')}`, {
+     // console.log(`http://makhmudjon.me/api/complains?${query.join('&')}`)
+      return axios.get(`${baseURL}/complains?${query.join('&')}`, {
          headers: { Authorization: `Bearer ${this.$store.getters.arrtoken}` 
          } }).then(response => response.data)
     },
     getData() {
       Promise.all([
-        (axios.get('http://makhmudjon.me/api/categories', { headers: { Authorization: `Bearer ${this.$store.getters.arrtoken}`  } })),
+        (axios.get(`${baseURL}/categories`, { headers: { Authorization: `Bearer ${this.$store.getters.arrtoken}`  } })),
         ...this.subCategories.map(subCategoryId => (this.executer([
           `categoryId=${this.categoryId}`,
           `subCategoryId=${subCategoryId}`,
@@ -73,11 +73,11 @@ export default {
         ]))),
       ]).then(result => {
         const [all, approvedLights, approvedSigns, approvedMarks] = result;
-        console.log(result)
+       // console.log(result)
         this.allCategories = all.data;
-        this.approvedLights = approvedLights ? approvedLights.length : 0;
-        this.approvedSigns = approvedSigns ? approvedSigns.length : 0;
-        this.approvedMarks = approvedMarks ? approvedMarks.length : 0;
+        this.approvedLights = approvedLights.length;
+        this.approvedSigns = approvedSigns.length;
+        this.approvedMarks = approvedMarks.length;
         this.renderChart(this.chartdata, this.options)
       }).catch(err => {
         console.log(err)
@@ -90,7 +90,7 @@ export default {
         .reduce((a, b) => a.concat(b), [])
     }
   },
-  mounted () {
+  created() {
     this.getData();
   }
 }

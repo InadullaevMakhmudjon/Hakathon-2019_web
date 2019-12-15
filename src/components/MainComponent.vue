@@ -12,7 +12,7 @@
           Application
           </v-list-item-title>
           <v-list-item-subtitle>
-            subtext
+            admin panel
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
@@ -21,7 +21,7 @@
 
         <template v-for="(item, i) in items">
           <v-list-item  :key="i"
-            link >
+            link @click="changebackground(item.router)" >
             <v-list-item-action>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-action>
@@ -115,60 +115,97 @@
     </v-menu>
   </div>
     </v-app-bar>
-   
-      <v-container
-        fluid 
-        >
-        <v-row  no-gutters>
-      <v-col
-      justify-center
-        v-for="(detail ,i) in 4"
-        :key="i"
-       class="p-2"
+<v-container v-if="casesroutess==0"
+            fluid 
+            >
+           <v-card tile flat color="transparent">
+             <v-card-title class="font-weight-light">Analizing data</v-card-title>
+           </v-card>
+           <v-row>
+             <v-col>
+               <main-report-summary/> 
+             </v-col>
+           </v-row>
+            <v-row  no-gutters>
+          <v-col
+          justify-center
+            v-for="(detail ,i) in 4"
+            :key="i"
+          class="p-2"
+          >
+            <template>
+      <v-card
+        raised
+        class="mx-auto text-center justify-center"
+        
+      width="96%"
+        height="230"
       >
-        <template>
-  <v-card
-    raised
-    class="mx-auto text-center justify-center"
-    
-   width="96%"
-    height="230"
-  >
-    <v-flex class="pa-3 ml-4 mt-3">
-      <PieChartGraph :categoryId="i+1"/>
-    </v-flex>
-  </v-card>
-</template>
+        <v-flex class="pa-3 ml-4 mt-3">
+          <PieChartGraph :categoryId="i+1"/>
+        </v-flex>
+      </v-card>
+    </template>
 
-      </v-col>
-    </v-row>
-       <!--Complaint Line Graph imp-->
-    <v-row>
-      <v-col>
-        <line-graph/>
-      </v-col>
-    </v-row>
-    <!--Statistic map-->
-    <v-row>
-      <v-col class="mb-12">
-        <main-statistic-map/>
-      </v-col>
-    </v-row>
-     <!--Complaint Report Summary imp-->
-    <v-row>
-      <v-col>
-       <main-report-summary/>
-      </v-col>
-    </v-row>
+          </v-col>
+        </v-row>
+          <!--Complaint Line Graph imp-->
+            <v-card tile flat color="transparent">
+             <v-card-title class="font-weight-light">Pollution rate for per date of month </v-card-title>
+           </v-card>
+        <v-row>
+          <v-col>
+            <line-graph/>
+          </v-col>
+        </v-row>
+        <!--Statistic map-->
+        <v-card tile flat color="transparent">
+             <v-card-title class="font-weight-light">Mapping all data in a one Y.map </v-card-title>
+           </v-card>
+        <v-row>
+          <v-col class="mb-12">
+            <main-statistic-map/>
+          </v-col>
+        </v-row>
+        
+        <!--Complaint row table-->
+        <v-card tile flat color="transparent" class="mt-0">
+             <v-card-title class="font-weight-light">Active users</v-card-title>
+           </v-card>
+          <v-row >
+          <v-col class="mx-2">
+            <main-table/>
+          </v-col>
+        </v-row>
+        <!--Complaint Report Summary imp-->
+        <v-row>
+          <v-col>
+          <!-- <main-report-summary/> -->
+          </v-col>
+        </v-row>
   
-     <!--Complaint row table-->
-      <v-row>
-      <v-col class="">
-        <main-table/>
-      </v-col>
-    </v-row>
-      </v-container>
-   
+</v-container>
+
+<v-container v-if="casesroutess==1"
+            fluid 
+            >
+            <h2 class="px-2 light">New upcoming Complains</h2>
+            <new-comlain-table/>
+</v-container>
+
+<v-container v-if="casesroutess==2"
+            fluid 
+            >
+<h2 class="px-2 light">Accepted complains</h2>
+<accepted-table/>
+</v-container>
+
+<v-container v-if="casesroutess==3"
+            fluid 
+            >
+<h1 class="px-2 light">Rejected complains</h1>
+<rejected-table/>
+</v-container>
   </v-app>
 </template>
 
@@ -178,6 +215,9 @@ import MainStatisticMap from './MainStatisticMap.vue'
 import MainReportSummary from './Charts/MainReportSummary.vue'
 import LineGraph from './Charts/LineGraph.vue'
 import MainTable from './MainTable.vue'
+import RejectedTable from './sub_views/RejectedTable.vue'
+import AcceptedTable from './sub_views/AcceptedTable.vue'
+import NewComlainTable from './sub_views/NewComplainTable.vue'
 
   export default {  
     name: 'dashboard',
@@ -187,12 +227,15 @@ import MainTable from './MainTable.vue'
       PieChartGraph,
       MainTable,
       LineGraph,
-      
+      RejectedTable,
+      AcceptedTable,
+      NewComlainTable
     },
     props: {
       source: String,
     },
     data: () => ({
+     casesroutess: 0,
      clicked: 0,
       toolbarTitle:[
         { title: 'Dashboard'},
@@ -203,11 +246,12 @@ import MainTable from './MainTable.vue'
       drawer: null,
      
       items: [
-        { icon: 'mdi-contacts', text: 'Dashboard' },
-        { icon: 'mdi-history', text: 'New Complaints' },
-        { icon: 'mdi-content-copy', text: 'Accepted' },
-         { icon: 'mdi-cancel', text: 'Rejected' },
-        { icon: 'mdi-settings', text: 'Settings' },
+        { icon: 'mdi-view-grid-outline', text: 'Dashboard' , router: 0},
+        { icon: 'mdi-account-clock', text: 'New Complaints' ,router: 1},
+        { icon: 'mdi-marker-check', text: 'Accepted',router: 2},
+        { icon: 'mdi-cancel', text: 'Rejected' , router: 3},
+        { icon: 'mdi-settings-outline', text: 'Settings' , router: 4},
+        { icon: 'mdi-gift-outline', text: 'Bonus and gifts' , router: 5},
        
         
       ],
@@ -224,22 +268,16 @@ import MainTable from './MainTable.vue'
       }
     },
     methods:{
+      changebackground(index){
+          this.casesroutess=index;
+      },
       getData() {
         this.$store.dispatch('getUserInfo')
       },
       logout(){
           this.$store.dispatch('logout')
-        //  this.$store.dispatch('recieveCategories')
-        //  this.$store.getters.recieveCategoriess
           this.$router.push('/')
         }
-        
-        /*
-        console.log(this.$store.dispatch('logout'))
-        this.$router.push('/')
-        console.log(this.$store.getters.recieveCategoriess)
-       // this.$store.dispatch('destroyToken')
-     */
       },
       mounted() {
         this.getData();

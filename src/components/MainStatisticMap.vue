@@ -1,8 +1,8 @@
 <template>
   <v-card elevation="8" width="99%" class=" ml-2">
       <yandex-map 
-  :coords="[41.311992,69.289906]"
-  zoom="14"
+  :coords="[41.322589,69.249142]"
+  zoom="13"
   style="width: 100%;  height: 400px;"
   :cluster-options="{
     1: {clusterDisableClickZoom: true}
@@ -14,14 +14,10 @@
  <ymap-marker v-for="(item,i) in complaint" :key="i"
       :marker-id="`${i+1}`"
        marker-type="placemark"
-      :coords="[item.lang, item.long]"
-       :hint-content="item.comments"
+      :coords="[item.lat, item.long]"
+       :hint-content="`${item.comment}`"
       :balloon="{header: 'header', body: 'body', footer: 'footer'}"
-      :icon="{
-         size: '13px', 
-         color: item.status==1? 'red':'green',
-         gylph: 'home'
-      }"
+      :icon="{ color: item.status==0 ? 'red': 'green' }"
       :cluster-name="i+1"
     ></ymap-marker>
 </yandex-map>
@@ -30,29 +26,48 @@
 
 <script>
 import { yandexMap, ymapMarker } from 'vue-yandex-maps'
-
+import axios from 'axios'
+import { baseURL } from '../utils/url'
 export default {
+
     components:{yandexMap, ymapMarker },
     data() {
   return {
-    placemarks: [
+    placemark: [
       {
         coords: [54.8, 39.8],
         properties: {},
         options: {},
         clusterName: "1",
-        callbacks: { click: function() {} }
+        callbacks: { click: function() {} },
+        balloonTemplate: `<div><p>Real</p></div>`
+        
       }
     ],
     complaint:[
         {comments: 'There is a problem 1', lang:'41.330918',long:'69.217946',status:1,category:'Traffic'},
-        {comments: 'There is a problem 2', lang:'41.328921',long:'69.261449',status:0,category:'Pollution'},
-        {comments: 'There is a problem 3', lang:'41.303166',long:'69.223802',status:0,category:'Communal'},
-        {comments: 'There is a problem 4', lang:'41.298540',long:'69.274555',status:1,category:'Electrocity & Gas'},
-        {comments: 'There is a problem 5', lang:'41.324612',long:'69.270093',status:1,category:'propery 2'},
-        {comments: 'There is a problem 6', lang:'41.315362',long:'69.249039',status:1,category:'propery 2'}
+        
     ]
 }
+},
+methods:{
+    fetchAllUserData () {
+      const AuthStr = `Bearer ${this.$store.getters.arrtoken}`
+      return new Promise((resolve, reject) => {
+        axios.get(`${baseURL}/complains`, { headers: { Authorization: AuthStr } }).then(res => {
+        this.complaint = res.data
+        console.log(this.complaint)
+          resolve('resolved')
+          resolve('resolved')
+        }).catch(error => {
+          console.log(error)
+          reject('error in rejection')
+        })
+      })
+    },
+},
+created(){
+  this.fetchAllUserData()
 }
 }
 </script>

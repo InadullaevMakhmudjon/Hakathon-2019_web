@@ -15,7 +15,6 @@ import MainComponent from './components/MainComponent'
 import MainLogin from '@/components/MainLogin';
 export default {
   name: 'App',
-  
   components: {
     MainComponent,
     MainLogin
